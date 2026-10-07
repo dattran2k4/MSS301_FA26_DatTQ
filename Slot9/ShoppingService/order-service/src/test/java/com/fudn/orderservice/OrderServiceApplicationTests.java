@@ -18,6 +18,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 // TODO 3.9: khoi dong WireMock (port ngau nhien) va ghi URL cua no vao property inventory.url
@@ -92,5 +94,15 @@ class OrderServiceApplicationTests {
                 .statusCode(500);
 
         assertThat(orderRepository.count(), Matchers.is(orderCountBefore));
+    }
+
+    @Test
+    void swaggerDocsDescribeOrderEndpoint() {
+        RestAssured.get("/swagger-ui.html").then().statusCode(200);
+        RestAssured.get("/api-docs").then()
+                .statusCode(200)
+                .body("info.title", equalTo("Order Service API"))
+                .body("info.version", equalTo("v0.0.1"))
+                .body("paths", hasKey("/api/order"));
     }
 }

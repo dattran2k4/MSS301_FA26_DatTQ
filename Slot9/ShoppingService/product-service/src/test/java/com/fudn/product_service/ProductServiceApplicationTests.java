@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -71,5 +72,17 @@ class ProductServiceApplicationTests {
 
     @Test
     void contextLoads() {
+    }
+
+    @Test
+    void swaggerDocsDescribeProductEndpoints() throws Exception {
+        mockMvc.perform(get("/swagger-ui.html"))
+                .andExpect(status().is3xxRedirection());
+
+        mockMvc.perform(get("/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.info.title").value("Product Service API"))
+                .andExpect(jsonPath("$.info.version").value("v0.0.1"))
+                .andExpect(jsonPath("$.paths['/api/products']").exists());
     }
 }

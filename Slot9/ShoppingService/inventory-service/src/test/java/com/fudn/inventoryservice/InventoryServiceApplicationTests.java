@@ -10,6 +10,8 @@ import org.testcontainers.containers.MySQLContainer;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class InventoryServiceApplicationTests {
@@ -49,5 +51,15 @@ class InventoryServiceApplicationTests {
                 .statusCode(200)
                 .extract().response().as(Boolean.class);
         assertFalse(negativeResponse);
+    }
+
+    @Test
+    void swaggerDocsDescribeInventoryEndpoint() {
+        RestAssured.get("/swagger-ui.html").then().statusCode(200);
+        RestAssured.get("/api-docs").then()
+                .statusCode(200)
+                .body("info.title", equalTo("Inventory Service API"))
+                .body("info.version", equalTo("v0.0.1"))
+                .body("paths", hasKey("/api/inventory"));
     }
 }
