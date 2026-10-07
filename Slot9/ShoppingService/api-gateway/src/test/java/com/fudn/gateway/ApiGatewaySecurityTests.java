@@ -93,4 +93,34 @@ class ApiGatewaySecurityTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }
+
+    @Test
+    void swaggerUiAndConfigurationShouldBePublic() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/swagger-ui.html"))
+                .andExpect(status().is3xxRedirection());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/v3/api-docs/swagger-config"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Product Service")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Order Service")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Inventory Service")));
+    }
+
+    @Test
+    void aggregateDocsShouldBePublicAndRewritePath() throws Exception {
+        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/api-docs"))
+                .willReturn(WireMock.aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"openapi\":\"3.0.1\"}")));
+
+        for (String service : new String[]{"product", "order", "inventory"}) {
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                            "/aggregate/" + service + "-service/v3/api-docs"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().json("{\"openapi\":\"3.0.1\"}"));
+        }
+
+        WireMock.verify(3, WireMock.getRequestedFor(WireMock.urlEqualTo("/api-docs")));
+    }
 }
