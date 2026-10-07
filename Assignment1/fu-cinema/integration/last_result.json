@@ -1,0 +1,132 @@
+{
+  "pass": 21,
+  "total": 21,
+  "cases": [
+    {
+      "case": "public genres",
+      "expected": 200,
+      "actual": 200,
+      "pass": true
+    },
+    {
+      "case": "rooms require token",
+      "expected": 401,
+      "actual": 401,
+      "pass": true
+    },
+    {
+      "case": "customer cannot create genre",
+      "expected": 403,
+      "actual": 403,
+      "pass": true
+    },
+    {
+      "case": "create genre",
+      "expected": 201,
+      "actual": 201,
+      "pass": true
+    },
+    {
+      "case": "duplicate genre",
+      "expected": 409,
+      "actual": 409,
+      "pass": true
+    },
+    {
+      "case": "create room",
+      "expected": 201,
+      "actual": 201,
+      "pass": true
+    },
+    {
+      "case": "create movie",
+      "expected": 201,
+      "actual": 201,
+      "pass": true
+    },
+    {
+      "case": "invalid genre reference",
+      "expected": 404,
+      "actual": 404,
+      "pass": true
+    },
+    {
+      "case": "create showtime",
+      "expected": 201,
+      "actual": 201,
+      "pass": true
+    },
+    {
+      "case": "reject overlap",
+      "expected": 409,
+      "actual": 409,
+      "pass": true
+    },
+    {
+      "case": "seat map empty",
+      "expected": 200,
+      "actual": 200,
+      "pass": true
+    },
+    {
+      "case": "book 2 seats",
+      "expected": 201,
+      "actual": 201,
+      "pass": true
+    },
+    {
+      "case": "reject taken seat",
+      "expected": 409,
+      "actual": 409,
+      "pass": true
+    },
+    {
+      "case": "reject invalid seat",
+      "expected": 400,
+      "actual": 400,
+      "pass": true
+    },
+    {
+      "case": "other customer cannot view",
+      "expected": 403,
+      "actual": 403,
+      "pass": true
+    },
+    {
+      "case": "customer history",
+      "expected": 200,
+      "actual": 200,
+      "pass": true
+    },
+    {
+      "case": "admin report",
+      "expected": 200,
+      "actual": 200,
+      "pass": true
+    },
+    {
+      "case": "customer cannot report",
+      "expected": 403,
+      "actual": 403,
+      "pass": true
+    },
+    {
+      "case": "cancel booking",
+      "expected": 200,
+      "actual": 200,
+      "pass": true
+    },
+    {
+      "case": "rebook released seat",
+      "expected": 201,
+      "actual": 201,
+      "pass": true
+    },
+    {
+      "case": "reject spoofed role",
+      "expected": 403,
+      "actual": 403,
+      "pass": true
+    }
+  ]
+}
