@@ -1,32 +1,42 @@
-# Shopping Service – Slot 7
+# Shopping Service – Slot 9
 
-Bài Part 3–4 tiếp tục từ `Slot6/ShoppingService`: Order Service gọi Inventory qua OpenFeign, Gateway định tuyến ba API và kiểm tra JWT do Keycloak cấp. Yêu cầu và test case chi tiết nằm trong `../Part3-4.md` và `../part3-4_Test.md`.
+Bài Part 5 tiếp tục từ `Slot7/ShoppingService`: ba service cung cấp OpenAPI và Swagger UI, còn API Gateway hiển thị tài liệu của cả hệ thống. Xem `../Part5_swaggerdocs.md` và `../Part5_guide.md` để đối chiếu yêu cầu.
 
 ## Thành phần
 
-| Thành phần | Port | Phiên bản |
-|---|---:|---|
-| Product Service | 8080 | Spring Boot 3.5.14 |
-| Order Service | 8081 | Spring Boot 4.1.0, Spring Cloud 2025.1.3 |
-| Inventory Service | 8082 | Spring Boot 3.5.14 |
-| API Gateway | 9000 | Spring Boot 4.1.0, Spring Cloud 2025.1.3 |
-| Keycloak | 8181 | Keycloak 24.0.1 |
+| Thành phần | Port | Spring Boot | Springdoc |
+|---|---:|---:|---:|
+| Product Service | 8080 | 3.5.14 | 2.8.17 |
+| Order Service | 8081 | 4.1.0 | 3.1.1 |
+| Inventory Service | 8082 | 3.5.14 | 2.8.17 |
+| API Gateway | 9000 | 4.1.0 | 3.1.1 |
+| Keycloak | 8181 | — | — |
 
-Java 21 và Maven 3.9+ được dùng để build. Product và Inventory giữ phiên bản từ Slot 6; mã Java của Product được đặt về Java 21 để cả bài dùng chung JDK.
+Cần Java 21, Maven 3.9+ và Docker. Hướng dẫn mẫu dùng Springdoc 2.5.0 và package `com.fudn.productservice`; project này dùng các phiên bản Spring Boot mới hơn và package Product thực tế là `com.fudn.product_service`. Cấu hình được đặt theo phiên bản và package đang chạy để Spring quét được bean OpenAPI.
 
 ## Chạy local
 
-Từ từng thư mục service, chạy các lệnh sau (mỗi service cần một terminal riêng):
+Từ thư mục `Slot9/ShoppingService`, khởi động hạ tầng:
 
 ```bash
-cd order-service && docker compose up -d
-cd ../product-service && docker compose up -d mongodb
-cd ../api-gateway && docker compose up -d
+(cd order-service && docker compose up -d)
+(cd product-service && docker compose up -d mongodb)
+(cd api-gateway && docker compose up -d)
 ```
 
-`product-service/docker-compose.yml` có Mongo Express tùy chọn trên port 8083. Keycloak tự import realm `spring-microservices-realm` và client `spring-microservices-client` khi database còn mới. Secret mẫu trong file realm chỉ dành cho môi trường học tập local.
+Keycloak tự import realm `spring-microservices-realm` và client `spring-microservices-client` khi database còn mới. Secret trong file realm chỉ dùng để thực hành local.
 
-Sau khi MySQL, MongoDB và Keycloak sẵn sàng, chạy `mvn spring-boot:run` trong từng thư mục `product-service`, `inventory-service`, `order-service`, `api-gateway`. Gateway chỉ cho phép `/actuator/health` không cần token; các API khác phải có Bearer token.
+Sau khi MongoDB, MySQL và Keycloak sẵn sàng, mở bốn terminal và chạy `mvn spring-boot:run` trong từng thư mục service.
+
+| URL | Nội dung |
+|---|---|
+| `http://localhost:8080/swagger-ui.html` | Swagger UI Product |
+| `http://localhost:8081/swagger-ui.html` | Swagger UI Order |
+| `http://localhost:8082/swagger-ui.html` | Swagger UI Inventory |
+| `http://localhost:9000/swagger-ui.html` | Swagger UI tổng hợp với ba service |
+| `http://localhost:8080/api-docs` | OpenAPI JSON Product (tương tự port 8081, 8082) |
+
+Gateway cho phép `/actuator/health`, Swagger UI, `/v3/api-docs/**` và `/aggregate/**` không cần JWT. Các API nghiệp vụ vẫn cần Bearer token. Các đường dẫn nghiệp vụ thực tế là `/api/products`, `/api/order` và `/api/inventory`.
 
 Lấy token và gọi thử Gateway:
 
@@ -42,13 +52,6 @@ curl -i -X POST -H 'Authorization: Bearer <access_token>' -H 'Content-Type: appl
   -d '{"skuCode":"iphone_15","price":1000,"quantity":1}' http://localhost:9000/api/order
 ```
 
-Nếu realm đã tồn tại trong Keycloak, import lúc khởi động sẽ không ghi đè realm đó. Xem `Part3-4.md` mục 4.5 để cấu hình client bằng giao diện khi cần.
-
 ## Kiểm thử
 
-```bash
-cd order-service && mvn test       # 2 test, cần Docker cho MySQL Testcontainers
-cd ../api-gateway && mvn test      # 5 test, không cần Docker/Keycloak thật
-```
-
-Test Gateway dùng WireMock cho ba service đích. Test Order dùng WireMock cho Inventory và MySQL Testcontainers để xác nhận đơn hết hàng không được lưu.
+Chạy `mvn test` trong mỗi thư mục `product-service`, `inventory-service`, `order-service`, `api-gateway`. Ba service đầu dùng Testcontainers nên cần Docker; test Gateway dùng WireMock, không cần Keycloak thật. Test Swagger xác nhận UI, metadata, endpoint trong JSON, route tổng hợp và quyền truy cập không có JWT.
