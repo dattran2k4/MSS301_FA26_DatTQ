@@ -1,9 +1,16 @@
 package com.mss301.inventory.controller;
 
 import com.mss301.inventory.entity.Product;
+import com.mss301.inventory.entity.Reservation;
+import com.mss301.inventory.dto.ReserveRequest;
 import com.mss301.inventory.repository.ProductRepository;
+import com.mss301.inventory.repository.ReservationRepository;
+import com.mss301.inventory.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +21,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InventoryController {
     private final ProductRepository productRepository;
+    private final ReservationRepository reservationRepository;
+    private final InventoryService inventoryService;
+
+    @PostMapping("/reserve")
+    public Reservation reserve(@RequestBody ReserveRequest request) {
+        return inventoryService.reserve(request);
+    }
+
+    @PostMapping("/release/{orderId}")
+    public String release(@PathVariable Long orderId) {
+        inventoryService.release(orderId);
+        return "RELEASED";
+    }
+
+    @GetMapping("/reservations")
+    public List<Reservation> reservations() {
+        return reservationRepository.findAll();
+    }
 
     @GetMapping("/products")
     public List<Product> products() {
