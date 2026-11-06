@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:account;MODE=MSSQLServer;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+jwt:
+  secret: test-only-key-with-at-least-32-bytes-not-for-production
+internal:
+  api-key: test-only-internal-key
+saga:
+  fault-injection:
+    enabled: true
+  compensation:
+    backoff-ms: 10
