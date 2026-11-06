@@ -1,0 +1,68 @@
+@base = http://localhost:8080
+@userId = 1
+@postId = 1
+
+### Create user (change username if already exists)
+POST {{base}}/api/users
+Content-Type: application/json
+
+{
+  "username": "creator_demo",
+  "email": "demo@example.com",
+  "role": "CREATOR",
+  "ratePerPost": 500000,
+  "maxDailyPosts": 3,
+  "level": 1
+}
+
+### Update user partially
+PUT {{base}}/api/users/{{userId}}
+Content-Type: application/json
+
+{"ratePerPost": 600000}
+
+### User detail
+GET {{base}}/api/users/{{userId}}
+
+### Filter users
+GET {{base}}/api/users?page=0&size=10&role=CREATOR&status=ACTIVE
+
+### Create campaign: 3 days, cost = current rate x 3
+POST {{base}}/api/posts
+Content-Type: application/json
+
+{
+  "advertiserName": "Shop ABC",
+  "advertiserEmail": "ads@example.com",
+  "advertiserPhone": "0900000000",
+  "startDate": "25/07/2026",
+  "endDate": "28/07/2026",
+  "numberOfPosts": 2,
+  "userId": {{userId}}
+}
+
+### Partial update and recalculate cost
+PUT {{base}}/api/posts/{{postId}}
+Content-Type: application/json
+
+{"endDate": "29/07/2026"}
+
+### Detail includes user object
+GET {{base}}/api/posts/{{postId}}
+
+### Filter campaigns
+GET {{base}}/api/posts?page=0&size=10&advertiserName=Shop&status=SCHEDULED
+
+### Validation: 406/status 2
+PUT {{base}}/api/posts/{{postId}}
+Content-Type: application/json
+
+{"numberOfPosts": 11}
+
+### Cancel campaign
+DELETE {{base}}/api/posts/{{postId}}
+
+### Deactivate user
+DELETE {{base}}/api/users/{{userId}}
+
+### Re-run create campaign to see 400/status 5
