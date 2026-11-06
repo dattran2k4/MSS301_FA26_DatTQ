@@ -1,0 +1,1 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>fu.de181019</groupId><artifactId>media-booking</artifactId><version>1.0.0</version><packaging>pom</packaging><modules><module>DE181019UserService</module><module>DE181019PostService</module><module>DE181019MediaGateway</module></modules></project>
